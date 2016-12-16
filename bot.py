@@ -1,4 +1,3 @@
-from enum import Enum
 from discord import Client
 client = Client()
 
