@@ -8,20 +8,23 @@ class Condition:
         self.channel = channel
 
     def holds(self, message):
-        return (self.start   is None or message.content.startswith(self.start)) and\
-               (self.author  is None or message.author  == self.author        ) and\
-               (self.channel is None or message.channel == self.channel       )
+        return (self.start   is None or message.content.split()[0] == self.start  ) and\
+               (self.author  is None or message.author             == self.author ) and\
+               (self.channel is None or message.channel            == self.channel)
 
 class Result:
-    def __init__(self, sendMessage=None, createChannel=None):
+    def __init__(self, sendMessage=None, createChannel=None, deleteChannel=None):
         self.sendMessage = sendMessage
         self.createChannel = createChannel
+        self.deleteChannel = deleteChannel
 
     async def doActions(self, message):
         if self.sendMessage is not None:
             await client.send_message(message.channel, self.sendMessage)
         if self.createChannel is not None:
             await client.create_channel(message.server, self.createChannel)
+        if self.deleteChannel is not None:
+            await client.delete_channel(self.deleteChannel)
 
 class Command:
     def __init__(self, func, condition):
