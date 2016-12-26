@@ -3,18 +3,18 @@ import bot
 
 @bot.command(bot.Condition(start="!echo"))
 def echo(message):
-    return bot.Result(sendMessage=bot.Message(channel=message.channel, content=message.content[len("!echo"):].lstrip()))
+    return bot.Action(sendMessage=bot.Message(channel=message.channel, content=message.content[len("!echo"):].lstrip()))
 
 @bot.command(bot.Condition(start="!create"))
 def create(message):
-    return bot.Result(createChannel=bot.Channel(server=message.server, name=message.content[len("!create"):].lstrip()))
+    return bot.Action(createChannel=bot.Channel(server=message.server, name=message.content[len("!create"):].lstrip()))
 
 @bot.command(bot.Condition(start="!antidisestablishmentarianism"))
 def anti(message):
-    return bot.Result(sendMessage=bot.Message(channel=message.channel, content="Yup"))
+    return bot.Action(sendMessage=bot.Message(channel=message.channel, content="Yup"))
 
 bot.run("MjUyMTk1MjYxMTM5Mzg2MzY5.Cxur_Q.QDEkWgWeEHyTHNVlog0hCVwDmM0")
-
+"""
 curHour = datetime.now().hour
 curMinute = datetime.now().minute
 update = False
@@ -40,3 +40,4 @@ while True:
         
         bot.execute(bot.Result(sendMessage=bot.Message(channel="general", content="It is {}!".format(message))))
         update = False
+"""
