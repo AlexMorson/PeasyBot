@@ -1,3 +1,4 @@
+import threading
 import asyncio
 import discord
 client = discord.Client()
@@ -34,7 +35,12 @@ class Result:
 
     async def doActions(self):
         if self.sendMessage is not None:
-            await client.send_message(self.sendMessage.channel, self.sendMessage.content)
+            if type(self.sendMessage.channel) == discord.Channel:
+                await client.send_message(self.sendMessage.channel, self.sendMessage.content)
+            else:
+                for channel in client.get_all_channels():
+                    if channel.name == self.sendMessage.channel:
+                        await client.send_message(channel, self.sendMessage.content)
         if self.createChannel is not None:
             await client.create_channel(self.createChannel.server, self.createChannel.name)
         if self.deleteChannel is not None:
@@ -56,11 +62,19 @@ def command(condition):
         commands.append(Command(func, condition))
     return decorator
 
+def execute(result):
+    results.append(result)
+
 def run(token):
     loop = asyncio.get_event_loop()
+    t = threading.Thread(target=botLoop, args=(asyncio.get_event_loop(), token))
+    t.start()
+
+def botLoop(loop, token):
+    asyncio.set_event_loop(loop)
     try:
         asyncio.ensure_future(resultLoop())
-        asyncio.ensure_future(client.start(token))
+        asyncio.ensure_future(client.run(token))
         loop.run_forever()
     except KeyboardInterrupt:
         loop.run_until_complete(client.logout())
@@ -68,9 +82,13 @@ def run(token):
         loop.close()
 
 async def resultLoop():
+    print("Started result loop")
+    while not client.is_logged_in:
+        await asyncio.sleep(1)
+    await asyncio.sleep(3)
+    #Logged in
     while True:
         if results != []:
-            print(results[0].createChannel.server.name,results[0].createChannel.name)
             await results.pop(0).doActions()
         await asyncio.sleep(0)
 
